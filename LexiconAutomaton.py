@@ -73,15 +73,15 @@ dfa = {
 finalStates = {
     2: 'id',
     3: 'lit',
-    4:'OPM',
+    4: 'OPM',
     7: 'comentario',
     8: 'EOF',
     9: 'OPR',
-    10:'OPR',
+    10: 'OPR',
     11: 'OPR',
-    12:'RCB',
-    13:'AB_P',
-    14:'FC_P',
+    12: 'RCB',
+    13: 'AB_P',
+    14: 'FC_P',
     15: 'PT_V',
     16: 'VIR',
     17: 'OPR',
@@ -101,10 +101,10 @@ def teste(trans, init, aceitacao ,string):
     for c in string:
         estado = next(trans[estado][key] for key in trans[estado] if c in key) #como eu vou explicar essa merda??
     if estado in aceitacao:
-        print(estado)
-        return estado
+        print(aceitacao[estado])
+        return aceitacao[estado]
 
 
-teste(dfa,0 , finalStates, '{oi}')
+teste(dfa,0 , finalStates,)
 #print(dfa[0])
 

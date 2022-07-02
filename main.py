@@ -1,16 +1,11 @@
-# This is a sample Python script.
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+from AutomatoLexico import *
+from TabelaSimbolos import *
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def scanner(arq_string,tabela_simbolos,afd,estados_finais):
+  classe =reconhecedor(afd,0,estados_finais,arq_string)
+  print (classe)
+    #return token
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+scanner('eai',tabela_simbolos,afd,estadosFinais)

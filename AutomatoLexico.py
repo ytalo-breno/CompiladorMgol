@@ -1,19 +1,18 @@
-
 # definindo letra e número
+import string
+
 letra = tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 numero = tuple("0123456789")
 aritm = tuple("+-/*")
 
-
-
-#tabela de transição de estados
+# tabela de transição de estados
 afd = {
     0: {' ': 0,
-        tuple('\"'+'\''): 1,
+        tuple('\"' + '\''): 1,
         letra: 2,
         aritm: 4,
         '{': 5,
-        '$': 8,  #mudar essa parada depois EOF
+        '$': 8,  # mudar essa parada depois EOF
         '<': 9,
         '(': 13,
         ')': 14,
@@ -25,12 +24,12 @@ afd = {
         },
     1: {
         (letra + numero + tuple(' ')): 1,
-        tuple('\"'+'\''): 3
+        tuple('\"' + '\''): 3
     },
     2: {
         letra + numero + tuple('_'): 2,
     },
-    5:{
+    5: {
         (letra + numero + aritm + tuple(' ' + '<' + '(' + ')' + ';' + ',' + '>' + '=' + '.' + ':')): 5,
         '}': 7,
     },
@@ -45,7 +44,7 @@ afd = {
     20: {
         numero: 20,
         '.': 21,
-        tuple('E'+'e'): 23
+        tuple('E' + 'e'): 23
     },
     21: {
         numero: 22
@@ -68,7 +67,7 @@ afd = {
     }
 }
 
-#def estados finais
+# def estados finais
 estadosFinais = {
     2: 'id',
     3: 'lit',
@@ -90,22 +89,24 @@ estadosFinais = {
     22: 'num',
     26: 'num',
 
-
 }
 
 
+def reconhecedor(trans, aceitacao, entrada):
+    estado = 0
+    col = 0
+    lexema =''
+    for c in entrada:
+        col+=1
+        if not c.isspace():
+            estado = next(trans[estado][key] for key in trans[estado] if c in key)
+        else:
+            if estado in aceitacao:
+                #reconhecedor(trans,aceitacao, entrada.partition(" ")[2])
+                lexema = entrada.partition(" ")[0]
+    print(lexema, aceitacao[estado],col)
+    return lexema, aceitacao[estado]
 
 
-def reconhecedor(trans, init, aceitacao ,string):
-    #breakpoint()
-    estado = init
-    for c in string:
-        estado = next(trans[estado][key] for key in trans[estado] if c in key) #como eu vou explicar essa merda??
-        if c ==' ' | '\n'
-    if estado in aceitacao:
-        print(aceitacao[estado])
-        return aceitacao[estado]
-
-
-#reconhecedor(afd, 0, estadosFinais, '1.1')
-
+if __name__ == '__main__':
+    reconhecedor(afd, estadosFinais, '062 *')

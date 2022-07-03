@@ -76,8 +76,8 @@ tabela_simbolos = {
 }
 
 
-def inserir_tabela_simbolos(tabela_simbolos,classe,token,tipo):
-    tabela_simbolos[token] ={
+def inserir_tabela_simbolos(tabela_simbolos, classe, token, tipo):
+    tabela_simbolos[token] = {
         'classe': classe,
         'lexema': token,
         'tipo': tipo

@@ -82,8 +82,9 @@ def inserir_tabela_simbolos(tabela_simbolos, classe, token, tipo):
         'lexema': token,
         'tipo': tipo
     }
-
-
-
+def busca_tabela_simbolos(tabela_simbolos,lexema):
+    for token in tabela_simbolos:
+        if lexema in tabela_simbolos[token]:
+            return tabela_simbolos[token]
 #inserir_tabela_simbolos(tabela_simbolos,)
 

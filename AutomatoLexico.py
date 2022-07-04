@@ -141,7 +141,7 @@ def scanner(afd, aceitacao, entrada):
 
             classe = aceitacao[estado]
 
-            token[lexema] ={
+            token[lexema] = {
                 'classe': classe,
                 'lexema': lexema,
                 'tipo':tipo

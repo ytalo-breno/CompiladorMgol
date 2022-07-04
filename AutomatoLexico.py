@@ -105,7 +105,7 @@ def scanner(afd, aceitacao, entrada):
             estado = next(afd[estado][key] for key in afd[estado] if c in key)
             lexema += c
 
-        except StopIteration:
+        except Exception:
 
             if estado in aceitacao:
 
@@ -128,27 +128,10 @@ def scanner(afd, aceitacao, entrada):
                 print(token)
                 estado = 0
             else:
-                print (f"ERRO LÉXICO \n LINHA: {linha}\n COLUNA: {col} ")
-    if estado in aceitacao:
-        if estado in aceitacao:
-
-            if estado == 20 or estado == 26:
-                tipo = 'inteiro'
-            elif estado == 22:
-                tipo = 'real'
-            else:
-                tipo ='nulo'
-
-            classe = aceitacao[estado]
-
-            token[lexema] = {
-                'classe': classe,
-                'lexema': lexema,
-                'tipo':tipo
-            }
+                print("ERRO LÉXICO \n LINHA: {linha}\n COLUNA: {col} ")
 
 
 
 
 if __name__ == '__main__':
-    scanner(afd, estadosFinais, 'uga * vapo')
+    scanner(afd, estadosFinais, '\'mama aqui o\'\n')

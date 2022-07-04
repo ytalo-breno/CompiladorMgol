@@ -1,5 +1,4 @@
-# definindo letra e número
-import string
+
 
 letra = tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 numero = tuple("0123456789")
@@ -92,21 +91,64 @@ estadosFinais = {
 }
 
 
-def reconhecedor(trans, aceitacao, entrada):
+def scanner(afd, aceitacao, entrada):
+    token = {}
     estado = 0
     col = 0
+    linha = 0
     lexema =''
+    tipo = ''
+    classe =''
     for c in entrada:
         col+=1
-        if not c.isspace():
-            estado = next(trans[estado][key] for key in trans[estado] if c in key)
-        else:
+        try:
+            estado = next(afd[estado][key] for key in afd[estado] if c in key)
+            lexema += c
+
+        except StopIteration:
+
             if estado in aceitacao:
-                #reconhecedor(trans,aceitacao, entrada.partition(" ")[2])
-                lexema = entrada.partition(" ")[0]
-    print(lexema, aceitacao[estado],col)
-    return lexema, aceitacao[estado]
+
+                if estado == 20 or estado == 26:
+                    tipo = 'inteiro'
+                elif estado == 22:
+                    tipo = 'real'
+                else:
+                    tipo ='nulo'
+
+                classe = aceitacao[estado]
+
+                token[lexema] ={
+                    'classe': classe,
+                    'lexema': lexema,
+                    'tipo':tipo
+                }
+
+                lexema =''
+                print(token)
+                estado = 0
+            else:
+                print (f"ERRO LÉXICO \n LINHA: {linha}\n COLUNA: {col} ")
+    if estado in aceitacao:
+        if estado in aceitacao:
+
+            if estado == 20 or estado == 26:
+                tipo = 'inteiro'
+            elif estado == 22:
+                tipo = 'real'
+            else:
+                tipo ='nulo'
+
+            classe = aceitacao[estado]
+
+            token[lexema] ={
+                'classe': classe,
+                'lexema': lexema,
+                'tipo':tipo
+            }
+
+
 
 
 if __name__ == '__main__':
-    reconhecedor(afd, estadosFinais, '062 *')
+    scanner(afd, estadosFinais, 'uga * vapo')

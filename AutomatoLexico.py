@@ -134,4 +134,4 @@ def scanner(afd, aceitacao, entrada):
 
 
 if __name__ == '__main__':
-    scanner(afd, estadosFinais, '\'mama aqui o\'\n')
+    scanner(afd, estadosFinais, 'B = A * 32')

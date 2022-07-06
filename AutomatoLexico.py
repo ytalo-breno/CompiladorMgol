@@ -1,12 +1,13 @@
-
-
+from typing import Dict, Any, Tuple
+from TabelaSimbolos import *
 letra = tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 numero = tuple("0123456789")
 aritm = tuple("+-/*")
+espaços = tuple('\n\t ')
 
 # tabela de transição de estados
 afd = {
-    0: {' ': 0,
+    0: {espaços: 0,
         tuple('\"' + '\''): 1,
         letra: 2,
         aritm: 4,
@@ -91,47 +92,62 @@ estadosFinais = {
 }
 
 
-def scanner(afd, aceitacao, entrada):
+def scanner(automato, aceitacao,tab_simb, entrada,):
     token = {}
     estado = 0
     col = 0
-    linha = 0
+    linha = 1
     lexema =''
     tipo = ''
     classe =''
     for c in entrada:
         col+=1
         try:
-            estado = next(afd[estado][key] for key in afd[estado] if c in key)
+            estado = next(automato[estado][key] for key in automato[estado] if c in key)
             lexema += c
 
         except Exception:
 
+            if c == '\n':
+                linha += 1
+
             if estado in aceitacao:
+                classe = aceitacao[estado]
 
                 if estado == 20 or estado == 26:
                     tipo = 'inteiro'
                 elif estado == 22:
                     tipo = 'real'
+                elif estado == 2:
+                    tipo = 'nulo'
+
                 else:
                     tipo ='nulo'
 
-                classe = aceitacao[estado]
-
-                token[lexema] ={
+                print( {
                     'classe': classe,
                     'lexema': lexema,
                     'tipo':tipo
-                }
+                })
 
-                lexema =''
-                print(token)
+
+                lexema = ''
                 estado = 0
-            else:
-                print("ERRO LÉXICO \n LINHA: {linha}\n COLUNA: {col} ")
+                try:
+                    estado = next(automato[estado][key] for key in automato[estado] if c in key)
+                    lexema += c
+                except Exception:
+                    print("ERRO LÉXICO \n LINHA: {}\n COLUNA: {} ".format(linha, col))
+            #else:
+               # print("ERRO LÉXICO \n LINHA: {} \n COLUNA: {} ".format(linha, col))
 
 
+def limpa (estado,lexema):
+    estado = 0
+    lexema =''
+
+    return estado, lexema
 
 
 if __name__ == '__main__':
-    scanner(afd, estadosFinais, 'B = A * 32')
+    scanner(afd, estadosFinais,tabela_simbolos, 'A <- 39*27 ')

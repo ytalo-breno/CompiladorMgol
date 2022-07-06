@@ -3,11 +3,11 @@ from TabelaSimbolos import *
 letra = tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 numero = tuple("0123456789")
 aritm = tuple("+-/*")
-espaços = tuple('\n\t ')
+espacos = tuple('\n\t ')
 
 # tabela de transição de estados
 afd = {
-    0: {espaços: 0,
+    0: {espacos: 0,
         tuple('\"' + '\''): 1,
         letra: 2,
         aritm: 4,
@@ -92,8 +92,8 @@ estadosFinais = {
 }
 
 
-def scanner(automato, aceitacao,tab_simb, entrada,):
-    token = {}
+def scanner(automato, aceitacao,tab_simb, entrada):
+
     estado = 0
     col = 0
     linha = 1
@@ -116,10 +116,16 @@ def scanner(automato, aceitacao,tab_simb, entrada,):
 
                 if estado == 20 or estado == 26:
                     tipo = 'inteiro'
+
                 elif estado == 22:
                     tipo = 'real'
+
                 elif estado == 2:
-                    tipo = 'nulo'
+                    if busca_tabela_simbolos(tabela_simbolos, lexema):
+                        print(tabela_simbolos[lexema])
+                    else:
+                        tipo = 'nulo'
+                        inserir_tabela_simbolos(tab_simb, classe, lexema, tipo)
 
                 else:
                     tipo ='nulo'
@@ -138,8 +144,13 @@ def scanner(automato, aceitacao,tab_simb, entrada,):
                     lexema += c
                 except Exception:
                     print("ERRO LÉXICO \n LINHA: {}\n COLUNA: {} ".format(linha, col))
-            #else:
-               # print("ERRO LÉXICO \n LINHA: {} \n COLUNA: {} ".format(linha, col))
+            else:
+               print("ERRO LÉXICO \n LINHA: {} \n COLUNA: {} ".format(linha, col))
+    print({
+        'classe': classe,
+        'lexema': lexema,
+        'tipo': tipo
+    })
 
 
 def limpa (estado,lexema):
@@ -150,4 +161,4 @@ def limpa (estado,lexema):
 
 
 if __name__ == '__main__':
-    scanner(afd, estadosFinais,tabela_simbolos, 'A <- 39*27 ')
+    scanner(afd, estadosFinais, tabela_simbolos, '\'A+ ')

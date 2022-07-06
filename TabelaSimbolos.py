@@ -76,15 +76,20 @@ tabela_simbolos = {
 }
 
 
-def inserir_tabela_simbolos(tabela_simbolos, classe, token, tipo):
-    tabela_simbolos[token] = {
+def inserir_tabela_simbolos(tabela_simbolos, classe, lexema, tipo):
+    tabela_simbolos[lexema] = {
         'classe': classe,
-        'lexema': token,
+        'lexema': lexema,
         'tipo': tipo
     }
 def busca_tabela_simbolos(tabela_simbolos,lexema):
-    for token in tabela_simbolos:
-        if lexema in tabela_simbolos[token]:
-            return tabela_simbolos[token]
-#inserir_tabela_simbolos(tabela_simbolos,)
+    for key in tabela_simbolos:
+        if lexema == key:
+            return True
+    else:
+        return False
 
+
+if __name__ == '__main__':
+    x = busca_tabela_simbolos(tabela_simbolos, 'se')
+    print(x)

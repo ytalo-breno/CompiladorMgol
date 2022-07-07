@@ -92,8 +92,7 @@ estadosFinais = {
 }
 
 
-def scanner(automato, aceitacao,tab_simb, entrada):
-
+def scanner(automato, aceitacao,tab_simb, entrada, marcador):
     estado = 0
     col = 0
     linha = 1
@@ -102,17 +101,24 @@ def scanner(automato, aceitacao,tab_simb, entrada):
     classe =''
     for c in entrada:
         col+=1
+        marcador+=1
         try:
             estado = next(automato[estado][key] for key in automato[estado] if c in key)
-            lexema += c
+            if c not in espacos:
+                lexema += c
 
         except Exception:
 
             if c == '\n':
                 linha += 1
+                col = 1
+
 
             if estado in aceitacao:
                 classe = aceitacao[estado]
+
+                if busca_tabela_simbolos(tabela_simbolos, lexema):
+                    return tabela_simbolos[lexema], marcador
 
                 if estado == 20 or estado == 26:
                     tipo = 'inteiro'
@@ -130,15 +136,14 @@ def scanner(automato, aceitacao,tab_simb, entrada):
                 else:
                     tipo ='nulo'
 
-                print( {
+                return {
                     'classe': classe,
                     'lexema': lexema,
                     'tipo':tipo
-                })
+                }, marcador
 
 
-                lexema = ''
-                estado = 0
+
                 try:
                     estado = next(automato[estado][key] for key in automato[estado] if c in key)
                     lexema += c
@@ -146,11 +151,11 @@ def scanner(automato, aceitacao,tab_simb, entrada):
                     print("ERRO LÉXICO \n LINHA: {}\n COLUNA: {} ".format(linha, col))
             else:
                print("ERRO LÉXICO \n LINHA: {} \n COLUNA: {} ".format(linha, col))
-    print({
-        'classe': classe,
-        'lexema': lexema,
-        'tipo': tipo
-    })
+    #return {
+              # 'classe': classe,
+              # 'lexema': lexema,
+              # 'tipo': tipo
+          # }, marcador
 
 
 def limpa (estado,lexema):
@@ -158,7 +163,18 @@ def limpa (estado,lexema):
     lexema =''
 
     return estado, lexema
+def main ():
 
-
+    arq = open('files/teste.mgol', "r")
+    arq_lido = arq.read()
+    marcador = 0
+    while True:
+        token, marcador = scanner(afd, estadosFinais, tabela_simbolos, arq_lido,marcador)
+        arq.seek(marcador)
+        arq_lido = arq.read()
+        print (token)
 if __name__ == '__main__':
-    scanner(afd, estadosFinais, tabela_simbolos, '\'A+ ')
+  main()
+
+
+

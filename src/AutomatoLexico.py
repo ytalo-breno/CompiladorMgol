@@ -4,7 +4,7 @@ letra = tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 numero = tuple("0123456789")
 aritm = tuple("+-/*")
 espacos = tuple('\n\t ')
-erro= {'linha':0,'colAt':0,'colErro':0}
+erro= {'linha':1,'colAt':0,'colErro':0}
 
 # tabela de transição de estados
 afd = {
@@ -24,14 +24,14 @@ afd = {
         numero: 20
         },
     1: {
-        (letra + numero + aritm + tuple(' ' + '<' + '(' + ')' + ';' + ',' + '>' + '=' + '.' + ':'+'/'+' ')): 1,
+        (letra + numero + aritm + tuple(' ' + '<' + '(' + ')' + ';' + ',' + '>' + '=' + '.' + ':'+'/'+ '\\')+espacos): 1,
         tuple('\"' + '\''): 3
     },
     2: {
         letra + numero + tuple('_'): 2,
     },
     5: {
-        (letra + numero + aritm + tuple(' ' + '<' + '(' + ')' + ';' + ',' + '>' + '=' + '.' + ':' + '/'+' ')): 5,
+        (letra + numero + aritm + tuple(' ' + '<' + '(' + ')' + ';' + ',' + '>' + '=' + '.' + ':' + '/'+'\\')+espacos): 5,
         '}': 7,
     },
     9: {
@@ -143,15 +143,26 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                 return {
                     'classe': classe,
                     'lexema': lexema,
-                    'tipo':tipo
+                    'tipo': tipo
                 }, marcador
             else:
                print("ERRO LÉXICO \n LINHA: {} \n COLUNA: {} ".format(erro['linha'], erro['colErro']))
-    #return {
-              # 'classe': classe,
-              # 'lexema': lexema,
-              # 'tipo': tipo
-          # }, marcador
+    if estado in aceitacao:
+        classe = aceitacao[estado]
+
+        return {
+                   'classe': classe,
+                   'lexema': lexema,
+                   'tipo': tipo
+               }, marcador
+    elif not c:
+        estado = 8
+        classe = aceitacao[estado]
+        return {
+            'classe': classe,
+            'lexema':  'EOF',
+            'tipo':'EOF'
+        }
 
 
 def limpa (estado,lexema):
@@ -171,6 +182,5 @@ def main ():
         print(token)
 if __name__ == '__main__':
   main()
-
 
 

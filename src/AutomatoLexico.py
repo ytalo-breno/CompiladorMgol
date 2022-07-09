@@ -4,6 +4,7 @@ letra = tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 numero = tuple("0123456789")
 aritm = tuple("+-/*")
 espacos = tuple('\n\t ')
+erro= {'linha':0,'colAt':0,'colErro':0}
 
 # tabela de transição de estados
 afd = {
@@ -23,14 +24,14 @@ afd = {
         numero: 20
         },
     1: {
-        (letra + numero + tuple(' ')): 1,
+        (letra + numero + aritm + tuple(' ' + '<' + '(' + ')' + ';' + ',' + '>' + '=' + '.' + ':'+'/'+' ')): 1,
         tuple('\"' + '\''): 3
     },
     2: {
         letra + numero + tuple('_'): 2,
     },
     5: {
-        (letra + numero + aritm + tuple(' ' + '<' + '(' + ')' + ';' + ',' + '>' + '=' + '.' + ':')): 5,
+        (letra + numero + aritm + tuple(' ' + '<' + '(' + ')' + ';' + ',' + '>' + '=' + '.' + ':' + '/'+' ')): 5,
         '}': 7,
     },
     9: {
@@ -94,24 +95,27 @@ estadosFinais = {
 
 def scanner(automato, aceitacao,tab_simb, entrada, marcador):
     estado = 0
-    col = 0
-    linha = 1
     lexema =''
     tipo = ''
-    classe =''
     for c in entrada:
-        col+=1
-        marcador+=1
+        erro['colAt'] += 1
+        marcador += 1
         try:
             estado = next(automato[estado][key] for key in automato[estado] if c in key)
-            if c not in espacos:
+
+            if c in espacos:
+                if estado == 5 or estado == 6 or estado == 1:
+                    lexema += c
+            else:
                 lexema += c
 
         except Exception:
+            marcador -= 1
+            erro['colErro'] = erro['colAt']
 
             if c == '\n':
-                linha += 1
-                col = 1
+                erro['linha'] += 1
+                erro['colAt'] = 1
 
 
             if estado in aceitacao:
@@ -141,16 +145,8 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                     'lexema': lexema,
                     'tipo':tipo
                 }, marcador
-
-
-
-                try:
-                    estado = next(automato[estado][key] for key in automato[estado] if c in key)
-                    lexema += c
-                except Exception:
-                    print("ERRO LÉXICO \n LINHA: {}\n COLUNA: {} ".format(linha, col))
             else:
-               print("ERRO LÉXICO \n LINHA: {} \n COLUNA: {} ".format(linha, col))
+               print("ERRO LÉXICO \n LINHA: {} \n COLUNA: {} ".format(erro['linha'], erro['colErro']))
     #return {
               # 'classe': classe,
               # 'lexema': lexema,
@@ -172,7 +168,7 @@ def main ():
         token, marcador = scanner(afd, estadosFinais, tabela_simbolos, arq_lido,marcador)
         arq.seek(marcador)
         arq_lido = arq.read()
-        print (token)
+        print(token)
 if __name__ == '__main__':
   main()
 

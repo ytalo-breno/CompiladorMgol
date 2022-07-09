@@ -1,4 +1,3 @@
-from AutomatoLexico import *
 
 tabela_simbolos = {
     'inicio': {
@@ -90,6 +89,3 @@ def busca_tabela_simbolos(tabela_simbolos,lexema):
         return False
 
 
-if __name__ == '__main__':
-    x = busca_tabela_simbolos(tabela_simbolos, 'se')
-    print(x)

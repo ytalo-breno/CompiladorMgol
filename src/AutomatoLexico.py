@@ -95,13 +95,24 @@ estadosFinais = {
 
 
 def scanner(automato, aceitacao,tab_simb, entrada, marcador):
+
     estado = 0
     lexema =''
     tipo = ''
     tipoErro = ''
+    chaveAberta = False
+    aspasAbertas = 0
     for c in entrada:
         erro['colAt'] += 1
         marcador += 1
+        if c =='{':
+            chaveAberta = True
+        elif c =='}':
+            chaveAberta = False
+        if c == '\'' or c =='\"':
+            aspasAbertas = 1
+
+
         try:
             estado = next(automato[estado][key] for key in automato[estado] if c in key)
 
@@ -113,7 +124,7 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
 
         except Exception:
             marcador -= 1
-            erro['colErro'] = erro['colAt']
+            erro['colErro'] = erro['colAt'] -1
 
             if c == '\n':
                 erro['linha'] += 1
@@ -152,12 +163,25 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                 if estado == 0:
                     tipoErro ='caracter invalido'
                     lexema = c
-                if estado == 1:
-                    if c ==';' or c =='\n':
-                        tipoErro = 'Não fechou aspas' #TRATAR!!!!!!!!!!!!
-               # elif estado == 5:
-                    #tipoErro = 'não fechou chaves'
-                elif estado == 21 or estado == 23 or estado == 24:
+
+                if chaveAberta == True:
+                    tipoErro = 'Não fechou chaves'
+                    print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
+                    return {
+                               'classe': 'ERRO',
+                               'lexema': lexema,
+                               'tipo': 'nulo'
+                           }, marcador
+
+                if aspasAbertas %2 != 0:
+                    tipoErro = 'Não fechou aspas'
+                    print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
+                    return {
+                               'classe': 'ERRO',
+                               'lexema': lexema,
+                               'tipo': 'nulo'
+                           }, marcador
+                elif estado == 21 or estado == 23 or estado == 24 or estado == 25:
                     tipoErro = 'Expressão incompleta'
 
                 print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))

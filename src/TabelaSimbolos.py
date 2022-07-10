@@ -25,7 +25,7 @@ tabela_simbolos = {
     'leia':{
         'classe':'leia',
         'lexema':'leia',
-        'tipo':'tipo',
+        'tipo':'leia',
     },
     'se':{
         'classe':'se',

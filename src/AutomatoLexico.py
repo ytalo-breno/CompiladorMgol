@@ -110,7 +110,7 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
         elif c =='}':
             chaveAberta = False
         if c == '\'' or c =='\"':
-            aspasAbertas = 1
+            aspasAbertas += 1
 
 
         try:
@@ -164,7 +164,7 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                     tipoErro ='caracter invalido'
                     lexema = c
 
-                if chaveAberta == True:
+                if chaveAberta == True and not lexema.endswith('}'):
                     tipoErro = 'Não fechou chaves'
                     print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
                     return {
@@ -173,7 +173,7 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                                'tipo': 'nulo'
                            }, marcador
 
-                if aspasAbertas %2 != 0:
+                if aspasAbertas %2 != 0 and not lexema.endswith("\";"):
                     tipoErro = 'Não fechou aspas'
                     print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
                     return {
@@ -181,7 +181,7 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                                'lexema': lexema,
                                'tipo': 'nulo'
                            }, marcador
-                elif estado == 21 or estado == 23 or estado == 24 or estado == 25:
+                if estado == 21 or estado == 23 or estado == 24 or estado == 25:
                     tipoErro = 'Expressão incompleta'
 
                 print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
@@ -217,7 +217,7 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
 
 def main():
 
-    arq = open('./files/teste1.mgol', "r")
+    arq = open('./files/teste.mgol', "r")
     arq_lido = arq.read()
     marcador = 0
     token = {'classe': ''}

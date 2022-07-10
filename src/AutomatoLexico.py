@@ -1,11 +1,11 @@
-from typing import Dict, Any, Tuple
 from TabelaSimbolos import *
+
 letra = tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 numero = tuple("0123456789")
 aritm = tuple("+-/*")
 espacos = tuple('\t ')
 alfabeto = letra + numero + aritm + espacos + tuple("\'\"{}()<=>;,:\\\n_")
-erro= {'linha':1,'colAt':0,'colErro':0}
+erro = {'linha':1,'colAt':0,'colErro':0}
 
 # tabela de transição de estados
 afd = {
@@ -96,13 +96,13 @@ estadosFinais = {
 
 
 def scanner(automato, aceitacao,tab_simb, entrada, marcador):
-
     estado = 0
     lexema =''
     tipo = ''
     tipoErro = ''
     chaveAberta = False
     aspasAbertas = 0
+
 
     for c in entrada:
         erro['colAt'] += 1
@@ -126,10 +126,12 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
 
         except Exception:
             marcador -= 1
-
+            if c == ' ':
+                erro['colAt']-=1
             if c == '\n':
                 erro['linha'] += 1
-                erro['colAt'] = 1
+                erro['colErro'] = erro['colAt']
+                erro['colAt'] = 0
 
 
             if c in alfabeto and estado in aceitacao:
@@ -163,13 +165,28 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
             else:
                 if not lexema:
                     marcador += 1
+                    erro['colErro'] = erro['colAt']
+
+                    if c not in alfabeto:
+                        erro['colAt']-=1
+                        tipoErro = 'caracter invalido: {}'.format(c)
+                        print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
+                        return {
+                                   'classe': 'ERRO',
+                                   'lexema': c,
+                                   'tipo': 'nulo'
+                               }, marcador
+
                     continue
 
                 if c not in alfabeto:
+                    erro['colErro'] = erro['colAt']
                     tipoErro ='caracter invalido: {}'.format(c)
 
                 if chaveAberta == True and c == '\n':
                     tipoErro = 'Não fechou chaves'
+                    erro['colErro']-=1
+                    erro['linha']-=1
                     print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
                     return {
                                'classe': 'ERRO',
@@ -178,7 +195,11 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                            }, marcador
 
                 if aspasAbertas %2 != 0 and c == '\n':
+
                     tipoErro = 'Não fechou aspas'
+
+                    erro['linha']-=1
+                    erro['colErro']-=1
                     print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
                     return {
                                'classe': 'ERRO',
@@ -187,7 +208,11 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                            }, marcador
 
                 if estado == 21 or estado == 23 or estado == 24 or estado == 25:
+                    if c =='\n':
+                        erro['colErro']=-1
+                        erro['linha']-=1
                     tipoErro = 'Expressão incompleta'
+
 
                 print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
                 return {

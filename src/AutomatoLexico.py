@@ -13,7 +13,7 @@ afd = {
         letra: 2,
         aritm: 4,
         '{': 5,
-        '$': 8,  # mudar essa parada depois EOF
+        '$': 8,
         '<': 9,
         '(': 13,
         ')': 14,
@@ -24,14 +24,14 @@ afd = {
         numero: 20
         },
     1: {
-        (letra + numero + aritm + tuple(' ' + '<' + '(' + ')' + ';' + ',' + '>' + '=' + '.' + ':'+'/'+ '\\')+espacos): 1,
+        (letra + numero + aritm + tuple(' ' + '<' + '(' + ')' + ';' + ',' + '>' + '=' + '.' + ':'+'/'+ '\\')+espacos):1,
         tuple('\"' + '\''): 3
     },
     2: {
         letra + numero + tuple('_'): 2,
     },
     5: {
-        (letra + numero + aritm + tuple(' ' + '<' + '(' + ')' + ';' + ',' + '>' + '=' + '.' + ':' + '/'+'\\')+espacos): 5,
+        (letra + numero + aritm + tuple(' ' + '<' + '(' + ')' + ';' + ',' + '>' + '=' + '.' + ':' + '/'+'\\')+espacos):5,
         '}': 7,
     },
     9: {
@@ -73,6 +73,7 @@ estadosFinais = {
     2: 'id',
     3: 'lit',
     4: 'OPM',
+    6: 'ERRO',
     7: 'comentario',
     8: 'EOF',
     9: 'OPR',
@@ -97,6 +98,7 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
     estado = 0
     lexema =''
     tipo = ''
+    tipoErro = ''
     for c in entrada:
         erro['colAt'] += 1
         marcador += 1
@@ -132,7 +134,7 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
 
                 elif estado == 2:
                     if busca_tabela_simbolos(tabela_simbolos, lexema):
-                        print(tabela_simbolos[lexema])
+                        return tabela_simbolos[lexema], marcador
                     else:
                         tipo = 'nulo'
                         inserir_tabela_simbolos(tab_simb, classe, lexema, tipo)
@@ -145,8 +147,29 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                     'lexema': lexema,
                     'tipo': tipo
                 }, marcador
+
             else:
-               print("ERRO LÉXICO \n LINHA: {} \n COLUNA: {} ".format(erro['linha'], erro['colErro']))
+                if estado == 0:
+                    tipoErro ='caracter invalido'
+                    lexema = c
+                if estado == 1:
+                    if c ==';' or c =='\n':
+                        tipoErro = 'Não fechou aspas' #TRATAR!!!!!!!!!!!!
+               # elif estado == 5:
+                    #tipoErro = 'não fechou chaves'
+                elif estado == 21 or estado == 23 or estado == 24:
+                    tipoErro = 'Expressão incompleta'
+
+                print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
+                return {
+                 'classe':'ERRO',
+                'lexema': lexema,
+                  'tipo': 'nulo'
+                }, marcador+1
+
+    if busca_tabela_simbolos(tabela_simbolos, lexema):
+        return tabela_simbolos[lexema],marcador
+
     if estado in aceitacao:
         classe = aceitacao[estado]
 
@@ -155,31 +178,31 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                    'lexema': lexema,
                    'tipo': tipo
                }, marcador
-    elif not c:
+
+
+
+    if not entrada:
         estado = 8
         classe = aceitacao[estado]
         return {
             'classe': classe,
-            'lexema':  'EOF',
-            'tipo':'EOF'
-        }
+            'lexema': 'EOF',
+            'tipo': 'EOF'
+        },marcador
 
 
-def limpa (estado,lexema):
-    estado = 0
-    lexema =''
+def main():
 
-    return estado, lexema
-def main ():
-
-    arq = open('files/teste.mgol', "r")
+    arq = open('./files/teste1.mgol', "r")
     arq_lido = arq.read()
     marcador = 0
-    while True:
+    token = {'classe': ''}
+    while token.get('classe') != 'EOF':
         token, marcador = scanner(afd, estadosFinais, tabela_simbolos, arq_lido,marcador)
         arq.seek(marcador)
         arq_lido = arq.read()
         print(token)
+
 if __name__ == '__main__':
   main()
 

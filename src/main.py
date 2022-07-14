@@ -18,3 +18,6 @@ def main():
 
 if __name__ == '__main__':
   main()
+
+ # for key in tabela_simbolos:
+      #print(tabela_simbolos[key])

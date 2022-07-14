@@ -124,10 +124,13 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
             else:
                 lexema += c
 
+
+
         except Exception:
             marcador -= 1
             if c == ' ':
                 erro['colAt']-=1
+
             if c == '\n':
                 erro['linha'] += 1
                 erro['colErro'] = erro['colAt']
@@ -156,6 +159,12 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                 else:
                     tipo ='nulo'
 
+                if estado == 7:
+                    marcador += 1
+                    lexema = ''
+                    estado = 0
+                    continue
+
                 return {
                     'classe': classe,
                     'lexema': lexema,
@@ -163,19 +172,19 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                 }, marcador
 
             else:
+                marcador +=1
+
+                if c =='\n':
+                    erro['linha']-=1
+
                 if not lexema:
-                    marcador += 1
+
                     erro['colErro'] = erro['colAt']
 
                     if c not in alfabeto:
                         erro['colAt']-=1
                         tipoErro = 'caracter invalido: {}'.format(c)
                         print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
-                        return {
-                                   'classe': 'ERRO',
-                                   'lexema': c,
-                                   'tipo': 'nulo'
-                               }, marcador
 
                     continue
 
@@ -186,40 +195,27 @@ def scanner(automato, aceitacao,tab_simb, entrada, marcador):
                 if chaveAberta == True and c == '\n':
                     tipoErro = 'Não fechou chaves'
                     erro['colErro']-=1
-                    erro['linha']-=1
-                    print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
-                    return {
-                               'classe': 'ERRO',
-                               'lexema': lexema,
-                               'tipo': 'nulo'
-                           }, marcador
+                    # print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
 
                 if aspasAbertas %2 != 0 and c == '\n':
 
                     tipoErro = 'Não fechou aspas'
 
-                    erro['linha']-=1
+
                     erro['colErro']-=1
-                    print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
-                    return {
-                               'classe': 'ERRO',
-                               'lexema': lexema,
-                               'tipo': 'nulo'
-                           }, marcador
+                    # print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
 
                 if estado == 21 or estado == 23 or estado == 24 or estado == 25:
-                    if c =='\n':
-                        erro['colErro']=-1
-                        erro['linha']-=1
+
+
                     tipoErro = 'Expressão incompleta'
 
 
                 print("ERRO LÉXICO:{} \n LINHA: {} \n COLUNA: {} ".format(tipoErro, erro['linha'], erro['colErro']))
-                return {
-                 'classe':'ERRO',
-                'lexema': lexema,
-                  'tipo': 'nulo'
-                }, marcador
+
+                estado = 0
+                lexema=''
+                continue
 
     if busca_tabela_simbolos(tabela_simbolos, lexema):
         return tabela_simbolos[lexema],marcador

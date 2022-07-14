@@ -1,4 +1,4 @@
-inicio {    Comentario}
+inicio {    Comentario }
     varinicio
         literal A, B;
         inteiro B;

@@ -1,5 +1,5 @@
 producoes ={
-    1:'P-> P',
+    1:'P\'-> P',
     2:'P-> inicio V A',
     3:'V-> varinicio LV',
     4:'LV-> D LV',

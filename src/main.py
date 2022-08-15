@@ -8,84 +8,78 @@ from Producoes import *
 def main():
 
     arq = open('./files/teste.mgol', "r")
-    action = pd.read_csv('./files/automatoLR(1).csv',index_col='state')
-    #goto = pd.read_csv('./files/goto.csv', index_col='state')
-
-    # action.set_index('state')
-    # goto.set_index('state')
+    action = pd.read_csv('./files/actions_goto.csv',index_col='state')
 
     arq_lido = arq.read()
     marcador = 0
     token = {'classe': ''}
 
-    s = 0
+    topo_pilha = 0
     pilha = list()
     pilha.append(0)
-    t = 0
-    # a ='inicio'
+    estado_t = 0
 
     token, marcador = scanner(afd, estadosFinais, tabela_simbolos, arq_lido, marcador)
     arq.seek(marcador)
     arq_lido = arq.read()
-    a = token['classe']
+    token_classe = token['classe']
 
     while token.get('classe'):
 
 
         #sintatico
 
-        s = pilha[-1]
+        topo_pilha = pilha[-1]
         try:
-            if "S" in action.at[s, a]:
+            if "S" in action.at[topo_pilha, token_classe]:
 
-                t = int(''.join(filter(str.isdigit, action.at[s,a])))
-                pilha.append(t)
-                #print(action.at[s,a])
-                #print(token['classe'])
+                estado_t = int(''.join(filter(str.isdigit, action.at[topo_pilha,token_classe])))
+                pilha.append(estado_t)
+
 
                 #estrutura de chamada do lexico
                 token, marcador = scanner(afd, estadosFinais, tabela_simbolos, arq_lido, marcador)
                 arq.seek(marcador)
                 arq_lido = arq.read()
-                a = token['classe']
+                token_classe = token['classe']
 
 
 
-            elif "R" in action.at[s,a]:
+            elif "R" in action.at[topo_pilha,token_classe]:
 
-                prodnum = int(''.join(filter(str.isdigit, action.at[s,a])))
+                prodnum = int(''.join(filter(str.isdigit, action.at[topo_pilha,token_classe])))
                 part = producoes[prodnum].partition('->')
                 cardinalidade = len(part[2].split())
                 for _ in range(cardinalidade):
                     pilha.pop()
 
-                t = pilha[-1]
+                estado_t = pilha[-1]
+
                 #goto
-                aux = int(action.loc[t,part[0]])
+                aux = int(action.loc[estado_t,part[0]])
                 pilha.append(aux)
                 print(producoes[prodnum])
 
-            elif 'ACC' in action.at[s,a]:
+            elif 'ACC' in action.at[topo_pilha,token_classe]:
                 print(producoes[prodnum-1])
                 break
 
         except Exception:
             #correçao frase
             pilha_aux = pilha.copy()
-            token_aux = a
-            s1 = pilha_aux[-1]
-            producao = get_prod(s1, action)
+            token_aux = token_classe
+            topo_pilha_aux = pilha_aux[-1]
+            producao = get_prod(topo_pilha_aux, action)
             action_rec = 'nan'
             action_rec2 = 'nan'
             for i in producao:
-                s = pilha[-1]
+                topo_pilha = pilha[-1]
                 pilha_aux = pilha.copy()
-                action_rec = action.at[s,i]
-                estado_rec = int(''.join(filter(str.isdigit, action.at[s1,i])))
+                action_rec = action.at[topo_pilha,i]
+                estado_rec = int(''.join(filter(str.isdigit, action.at[topo_pilha_aux,i])))
                 action_rec_original ='nan'
                 action_rec_parcial = ''
-                if i =='fc_p':
-                    pass
+
                 while str(action_rec_original) =='nan' and str(action_rec_parcial) !='nan':
 
                     if 'R' in action_rec:
@@ -95,37 +89,35 @@ def main():
                         for _ in range(cardinalidade):
                             pilha_aux.pop()
 
-                        t = pilha_aux[-1]
+                        estado_t = pilha_aux[-1]
+
                         # goto
-                        aux = int(action.loc[t, part[0]])
+                        aux = int(action.loc[estado_t, part[0]])
                         action_rec = action.loc[aux,i]
                         pilha_aux.append(aux)
-                        s = pilha_aux[-1]
-                        action_rec_original = action.loc[s,a]
+                        topo_pilha = pilha_aux[-1]
+                        action_rec_original = action.loc[topo_pilha,token_classe]
 
                     elif 'S' in action_rec:
-                        if action_rec == 'S70':
-                            pass
                         action_rec_original = action_rec
                         pilha_aux.append(int(''.join(filter(str.isdigit, action_rec))))
 
-
-                    action_rec_parcial = action.loc[s,i]
+                    action_rec_parcial = action.loc[topo_pilha,i]
                 action_rec2 = action.at[pilha_aux[-1], token_aux]
                 if str(action_rec2) != 'nan':
                     print('Erro sintático no token {}, linha {}, col {}'.format(token['lexema'],erro['linha'],erro['colErro']))
                     print('Esperava: {}'.format(i))
                     pilha = pilha_aux
-                    a = token_aux
+                    token_classe = token_aux
                     break
-
+            #panico
             if action_rec == float('nan') or str(action_rec2) == 'nan':
-                print('erro')
+                print('Erro sintático, token {} não era esperado,linha {}, col {}'.format(token['lexema'],erro['linha'],erro['colErro']))
 
                 token, marcador = scanner(afd, estadosFinais, tabela_simbolos, arq_lido, marcador)
                 arq.seek(marcador)
                 arq_lido = arq.read()
-                a = token['classe']
+                token_classe = token['classe']
 
 
 
@@ -142,8 +134,6 @@ def get_prod(state, action):
 
 
 
-
-    print(action)
 
 if __name__ == '__main__':
   main()

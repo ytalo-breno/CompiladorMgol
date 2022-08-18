@@ -105,14 +105,14 @@ def main():
                     action_rec_parcial = action.loc[topo_pilha,i]
                 action_rec2 = action.at[pilha_aux[-1], token_aux]
                 if str(action_rec2) != 'nan':
-                    print('Erro sintático no token {}, linha {}, col {}'.format(token['lexema'],erro['linha'],erro['colErro']))
-                    print('Esperava: {}'.format(i))
+                    print('\nErro sintático no token {}, linha {}, col {}'.format(token['lexema'],erro['linha'],erro['colErro']))
+                    print('Esperava: {}\n'.format(i))
                     pilha = pilha_aux
                     token_classe = token_aux
                     break
             #panico
             if action_rec == float('nan') or str(action_rec2) == 'nan':
-                print('Erro sintático, token {} não era esperado,linha {}, col {}'.format(token['lexema'],erro['linha'],erro['colErro']))
+                print('\nErro sintático, token {} não era esperado,linha {}, col {}\n'.format(token['lexema'],erro['linha'],erro['colErro']))
 
                 token, marcador = scanner(afd, estadosFinais, tabela_simbolos, arq_lido, marcador)
                 arq.seek(marcador)

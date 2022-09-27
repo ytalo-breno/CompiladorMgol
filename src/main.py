@@ -4,6 +4,8 @@ import pandas as pd
 from AutomatoLexico import *
 from TabelaSimbolos import *
 from Producoes import *
+from src.semantico import escolhe_regra, pilha_semantica
+
 
 def main():
 
@@ -36,12 +38,14 @@ def main():
                 estado_t = int(''.join(filter(str.isdigit, action.at[topo_pilha,token_classe])))
                 pilha.append(estado_t)
 
-
+                pilha_semantica.append(token)
                 #estrutura de chamada do lexico
                 token, marcador = scanner(afd, estadosFinais, tabela_simbolos, arq_lido, marcador)
+
                 arq.seek(marcador)
                 arq_lido = arq.read()
                 token_classe = token['classe']
+
 
 
 
@@ -59,6 +63,8 @@ def main():
                 aux = int(action.loc[estado_t,part[0]])
                 pilha.append(aux)
                 print(producoes[prodnum])
+## essA CARALHA DO SEMANTICO COMEÇA AQUI
+                escolhe_regra(prodnum)
 
             elif 'ACC' in action.at[topo_pilha,token_classe]:
                 print(producoes[prodnum-1])
@@ -118,6 +124,7 @@ def main():
                 arq.seek(marcador)
                 arq_lido = arq.read()
                 token_classe = token['classe']
+    arq.close()
 
 
 

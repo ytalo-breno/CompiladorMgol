@@ -1,5 +1,5 @@
 
-tabela_simbolos = {
+tabela_simbolos:dict = {
     'inicio': {
         'classe': 'inicio',
         'lexema': 'inicio',
@@ -87,5 +87,8 @@ def busca_tabela_simbolos(tabela_simbolos,lexema):
             return True
     else:
         return False
+def atualizar_tabela_simbolos(tabela_simbolos,lexema,tipo):
+    if busca_tabela_simbolos(tabela_simbolos,lexema):
+        tabela_simbolos[lexema].update({'tipo':tipo})
 
 

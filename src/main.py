@@ -63,7 +63,7 @@ def main():
                 aux = int(action.loc[estado_t,part[0]])
                 pilha.append(aux)
                 print(producoes[prodnum])
-## essA CARALHA DO SEMANTICO COMEÇA AQUI
+## Inicio semantico
                 escolhe_regra(prodnum)
 
             elif 'ACC' in action.at[topo_pilha,token_classe]:
